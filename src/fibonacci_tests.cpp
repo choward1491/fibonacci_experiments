@@ -25,7 +25,7 @@ namespace fibonacci {
         return (num - denom);
     }
 
-    __uint128_t medium_test( size_t n ) {
+    __uint128_t medium_approach( size_t n ) {
         __uint128_t fn = 0;
         
         std::vector<double> numbers(n+1);
@@ -79,6 +79,10 @@ namespace fibonacci {
         
         __uint128_t fn = 0;
         
+        // return trivial base cases
+        if( n == 0 ){ return 0; }
+        if( n == 1 ){ return 1; }
+        
         // initialize the list of pre-computed matrices
         --n;
         std::vector<mat22> computed_mats(std::log2(n)+1);
@@ -112,36 +116,49 @@ namespace fibonacci {
 
     /* Simple test to run and compare approaches */
     void test_fibonacci_num() {
-        size_t n = 10000;
-        n = 80;
         
+        // list of input n values to try to see how
+        // the two algorithms compare
+        std::array<size_t, 7> n_values { 2, 17, 35, 53, 61, 80, 170 };
+        
+        // loop over value of n and see how the different
+        // techniques perform for each input, on average
         size_t num_samples = 100;
-        {// test the medium post version
-            size_t j = 0;
-            std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
+        for(auto n: n_values){
             
-            for(size_t i = 0; i < num_samples; ++i){
-                auto val1 = fibonacci::medium_test(n);
-                j = j + i;
+            double mruntime = 0.0, fdruntime = 0.0;
+            {// test the medium post version
+                size_t j = 0;
+                std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
+                
+                for(size_t i = 0; i < num_samples; ++i){
+                    auto val1 = fibonacci::medium_approach(n);
+                    j = j + i*i; // help make sure optimizer keeps each iteration of loop
+                }
+                
+                std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
+                std::chrono::duration<double> time_span = std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);
+                mruntime = time_span.count()/static_cast<double>(num_samples);
+                std::cout << "Found F(" << n << ") using medium post approach in " << mruntime << " seconds on average" << std::endl;
+            }
+            {// test the naive approach
+                size_t j = 0;
+                std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
+                
+                for(size_t i = 0; i < num_samples; ++i){
+                    auto val2 = fibonacci::fast_doubling(n);
+                    j = j + i*i; // help make sure optimizer keeps each iteration of loop
+                }
+                
+                std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
+                std::chrono::duration<double> time_span = std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);
+                fdruntime = time_span.count()/static_cast<double>(num_samples);
+                std::cout << "Found F(" << n << ") using fast doubling approach in " << fdruntime << " seconds on average" << std::endl;
             }
             
-            std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
-            std::chrono::duration<double> time_span = std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);
-            std::cout << "Time to run medium post version is " << time_span.count() << " seconds" << std::endl;
-        }
-        {// test the naive approach
-            size_t j = 0;
-            std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
-            
-            for(size_t i = 0; i < num_samples; ++i){
-                auto val2 = fibonacci::fast_doubling(n);
-                j = j + i;
-            }
-            
-            std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
-            std::chrono::duration<double> time_span = std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);
-            std::cout << "Time to run fast doubling version is " << time_span.count() << " seconds" << std::endl;
-        }
+            std::cout << "Fast doubling is " << (mruntime / fdruntime) << " times faster than the medium post approach" << std::endl;
+            std::cout << std::endl;
+        }// end for loop
     }
 
 }

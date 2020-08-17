@@ -14,7 +14,7 @@
 namespace fibonacci {
     using quad = long double;
 
-    __uint128_t medium_test( size_t n );
+    __uint128_t medium_approach( size_t n );
     __uint128_t fast_doubling( size_t n );
 
     void test_fibonacci_num();
