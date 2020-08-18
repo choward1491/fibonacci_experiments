@@ -96,6 +96,33 @@ namespace fibonacci {
         }
     }
 
+    namespace biginput {
+        big_int medium_approach( size_t n ) {
+            
+            big_int fn;
+            
+            arma::vec ks = arma::regspace(0, (n+1)/2 - 1);
+            arma::vec odds = 2.0 * ks + 1.0;
+            arma::vec coefs = version2::log_binomial2(n, odds);
+            arma::vec terms = std::log(std::sqrt(5.0)) * odds;
+            arma::vec res = coefs + terms;
+            res = res - (std::log(2.0)*(n-1) + std::log(std::sqrt(5.0)));
+            double m = arma::max(res);
+            res = res - m;
+            res = arma::exp(res);
+            double sum = arma::sum(res);
+            
+            // do the conversion
+            big_float exponential = boost::multiprecision::exp(static_cast<big_float>(m));
+            big_float value = boost::multiprecision::round(exponential * static_cast<big_float>(sum));
+            fn = static_cast<big_int>(value);
+            
+            // return the result
+            return fn;
+            
+        }
+    }
+
     /* Fast doubling related code */
     using mat22 = std::array<__uint128_t, 4>;
     using vec2  = std::array<__uint128_t, 2>;
@@ -289,22 +316,49 @@ namespace fibonacci {
         
         // list of input n values to try to see how
         // the two algorithms compare
-        size_t n = 2000000;
+        std::vector<size_t> n_values { 10000, 25000, 50000, 100000, 200000, 400000, 800000, 1600000, 2000000 };
         
-        size_t num_samples = 10;
-        {// test the exact big num version
-            big_int out;
-            std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
-            
-            for(size_t i = 0; i < num_samples; ++i){
-                out = fibonacci::biginput::fast_doubling(n);
+        size_t num_samples = 5;
+        for(auto n: n_values){
+            {// test the exact big num version
+                big_int out;
+                std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
+                
+                for(size_t i = 0; i < num_samples; ++i){
+                    out = fibonacci::biginput::fast_doubling(n);
+                }
+                
+                std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
+                std::chrono::duration<double> time_span = std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);
+                double mruntime = time_span.count()/static_cast<double>(num_samples);
+                std::cout << "In " << mruntime << " seconds on avg, found F(" << n << ")" << std::endl;
+                //std::cout << "F(" << n << ") = " << ".. yeah, too big" << std::endl; //out << std::endl;
             }
-            
-            std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
-            std::chrono::duration<double> time_span = std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);
-            double mruntime = time_span.count()/static_cast<double>(num_samples);
-            std::cout << "In " << mruntime << " seconds on avg, found that" << std::endl;
-            std::cout << "F(" << n << ") = " << ".. yeah, too big" << std::endl; //out << std::endl;
+        }
+    }
+
+    void test_approx_fibonacci_bignum() {
+        
+        // list of input n values to try to see how
+        // the two algorithms compare
+        std::vector<size_t> n_values { 10000, 25000, 50000, 100000, 200000, 400000, 800000, 1600000, 2000000 };
+        
+        size_t num_samples = 5;
+        for(auto n: n_values){
+            {// test the exact big num version
+                big_int out;
+                std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
+                
+                for(size_t i = 0; i < num_samples; ++i){
+                    out = fibonacci::biginput::medium_approach(n);
+                }
+                
+                std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
+                std::chrono::duration<double> time_span = std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);
+                double mruntime = time_span.count()/static_cast<double>(num_samples);
+                std::cout << "In " << mruntime << " seconds on avg, found F(" << n << ")" << std::endl;
+                //std::cout << "F(" << n << ") = " << ".. yeah, too big" << std::endl; //out << std::endl;
+            }
         }
             
     }

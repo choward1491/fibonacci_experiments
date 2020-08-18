@@ -15,6 +15,7 @@
 
 namespace fibonacci {
     using big_int = boost::multiprecision::mpz_int;
+    using big_float = boost::multiprecision::mpf_float;
     using quad = long double;
 
     std::string to_string(__uint128_t num);
@@ -25,11 +26,13 @@ namespace fibonacci {
     __uint128_t fast_doubling( size_t n );
 
     namespace biginput {
+        big_int medium_approach( size_t n );
         big_int fast_doubling( size_t n );
     }
 
     void test_fibonacci_num();
     void test_exact_fibonacci_bignum();
+    void test_approx_fibonacci_bignum();
 
 }
 
