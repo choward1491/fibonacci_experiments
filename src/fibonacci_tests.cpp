@@ -12,6 +12,7 @@
 #include <array>
 #include <chrono>
 #include <iostream>
+#include <armadillo>
 
 namespace fibonacci {
 
@@ -53,6 +54,45 @@ namespace fibonacci {
         
         // return the result
         return fn;
+    }
+
+    namespace version2 {
+    
+        arma::vec log_binomial2(size_t n, const arma::vec& indices){
+            arma::vec r = arma::regspace(0, n-1) + 1;
+            r = arma::log(r);
+            double s = arma::sum(r);
+            r = arma::cumsum(r);
+            arma::vec z(n+1, arma::fill::zeros);
+            z.elem(arma::regspace<arma::uvec>(1, n)) = r;
+            arma::vec z1 = z.elem(arma::regspace<arma::uvec>(n, -1, 0));
+            z = z + z1;
+            z = s - z;
+            return z.elem(arma::regspace<arma::uvec>(1, 2, n));
+        }
+    
+        __uint128_t medium_approach( size_t n ) {
+            __uint128_t fn = 0;
+            
+            arma::vec ks = arma::regspace(0, (n+1)/2 - 1);
+            arma::vec odds = 2.0 * ks + 1.0;
+            arma::vec coefs = log_binomial2(n, odds);
+            arma::vec terms = std::log(std::sqrt(5.0)) * odds;
+            arma::vec res = coefs + terms;
+            res = res - (std::log(2.0)*(n-1) + std::log(std::sqrt(5.0)));
+            double m = arma::max(res);
+            res = res - m;
+            res = arma::exp(res);
+            double sum = arma::sum(res);
+            
+            // compute the resulting integer
+            quad exponential = std::exp(static_cast<quad>(m));
+            quad value = std::round(exponential * static_cast<quad>(sum));
+            fn = static_cast<__uint128_t>(value);
+            
+            // return the result
+            return fn;
+        }
     }
 
     /* Fast doubling related code */
@@ -119,20 +159,21 @@ namespace fibonacci {
         
         // list of input n values to try to see how
         // the two algorithms compare
-        std::array<size_t, 7> n_values { 2, 17, 35, 53, 61, 80, 170 };
+        std::array<size_t, 8> n_values { 2, 17, 35, 53, 61, 80, 100, 200 };
         
         // loop over value of n and see how the different
         // techniques perform for each input, on average
-        size_t num_samples = 100;
+        size_t num_samples = 200;
         for(auto n: n_values){
             
             double mruntime = 0.0, fdruntime = 0.0;
+            __uint128_t val1, val2;
             {// test the medium post version
                 size_t j = 0;
                 std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
                 
                 for(size_t i = 0; i < num_samples; ++i){
-                    auto val1 = fibonacci::medium_approach(n);
+                    val1 = fibonacci::version2::medium_approach(n);
                     j = j + i*i; // help make sure optimizer keeps each iteration of loop
                 }
                 
@@ -146,7 +187,7 @@ namespace fibonacci {
                 std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
                 
                 for(size_t i = 0; i < num_samples; ++i){
-                    auto val2 = fibonacci::fast_doubling(n);
+                    val2 = fibonacci::fast_doubling(n);
                     j = j + i*i; // help make sure optimizer keeps each iteration of loop
                 }
                 
@@ -156,7 +197,17 @@ namespace fibonacci {
                 std::cout << "Found F(" << n << ") using fast doubling approach in " << fdruntime << " seconds on average" << std::endl;
             }
             
+            quad difference = 0.0;
+            if( val1 >= val2 ){
+                difference = static_cast<quad>( val1 - val2 );
+            }else{
+                difference = static_cast<quad>( val2 - val1 );
+            }
+            double percent_different =  difference / static_cast<quad>(val2);
+            percent_different = std::abs(percent_different);
+            
             std::cout << "Fast doubling is " << (mruntime / fdruntime) << " times faster than the medium post approach" << std::endl;
+            std::cout << "The error in medium approach is " << percent_different << "%" << std::endl;
             std::cout << std::endl;
         }// end for loop
     }

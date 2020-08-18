@@ -1,0 +1,39 @@
+Found F(2) using medium post approach in 2.5109e-07 seconds on average
+Found F(2) using fast doubling approach in 1.1032e-07 seconds on average
+Fast doubling is 2.27602 times faster than the medium post approach
+The error in medium approach is 0%
+
+Found F(17) using medium post approach in 1.08218e-06 seconds on average
+Found F(17) using fast doubling approach in 1.50085e-07 seconds on average
+Fast doubling is 7.21048 times faster than the medium post approach
+The error in medium approach is 0%
+
+Found F(35) using medium post approach in 4.11155e-06 seconds on average
+Found F(35) using fast doubling approach in 1.95605e-07 seconds on average
+Fast doubling is 21.0197 times faster than the medium post approach
+The error in medium approach is 0%
+
+Found F(53) using medium post approach in 8.56993e-06 seconds on average
+Found F(53) using fast doubling approach in 1.9793e-07 seconds on average
+Fast doubling is 43.2978 times faster than the medium post approach
+The error in medium approach is 0%
+
+Found F(61) using medium post approach in 1.17483e-05 seconds on average
+Found F(61) using fast doubling approach in 5.57475e-07 seconds on average
+Fast doubling is 21.074 times faster than the medium post approach
+The error in medium approach is 0%
+
+Found F(80) using medium post approach in 2.074e-05 seconds on average
+Found F(80) using fast doubling approach in 2.02085e-07 seconds on average
+Fast doubling is 102.63 times faster than the medium post approach
+The error in medium approach is 1.37936e-14%
+
+Found F(100) using medium post approach in 3.15308e-05 seconds on average
+Found F(100) using fast doubling approach in 2.0256e-07 seconds on average
+Fast doubling is 155.662 times faster than the medium post approach
+The error in medium approach is 4.94844e-15%
+
+Found F(200) using medium post approach in 0.000119649 seconds on average
+Found F(200) using fast doubling approach in 2.22255e-07 seconds on average
+Fast doubling is 538.343 times faster than the medium post approach
+The error in medium approach is 0.906315%
