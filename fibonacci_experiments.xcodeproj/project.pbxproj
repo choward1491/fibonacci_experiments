@@ -11,6 +11,7 @@
 		3FC5742724EB095D00703044 /* fibonacci_tests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3FC5742524EB095D00703044 /* fibonacci_tests.cpp */; };
 		3FC5742A24EB4F9B00703044 /* libarmadillo.9.90.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3FC5742924EB4F9B00703044 /* libarmadillo.9.90.2.dylib */; };
 		3FC5742C24EB4FB500703044 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3FC5742B24EB4FB500703044 /* Accelerate.framework */; };
+		3FC5742E24EBA04300703044 /* libgmp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3FC5742D24EBA04300703044 /* libgmp.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -32,6 +33,7 @@
 		3FC5742624EB095D00703044 /* fibonacci_tests.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = fibonacci_tests.hpp; sourceTree = "<group>"; };
 		3FC5742924EB4F9B00703044 /* libarmadillo.9.90.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libarmadillo.9.90.2.dylib; path = ../../../../../../usr/local/Cellar/armadillo/9.900.2/lib/libarmadillo.9.90.2.dylib; sourceTree = "<group>"; };
 		3FC5742B24EB4FB500703044 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
+		3FC5742D24EBA04300703044 /* libgmp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgmp.a; path = ../../../../../../usr/local/Cellar/gmp/6.2.0/lib/libgmp.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -39,6 +41,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3FC5742E24EBA04300703044 /* libgmp.a in Frameworks */,
 				3FC5742C24EB4FB500703044 /* Accelerate.framework in Frameworks */,
 				3FC5742A24EB4F9B00703044 /* libarmadillo.9.90.2.dylib in Frameworks */,
 			);
@@ -77,6 +80,7 @@
 		3FC5742824EB4F9B00703044 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				3FC5742D24EBA04300703044 /* libgmp.a */,
 				3FC5742B24EB4FB500703044 /* Accelerate.framework */,
 				3FC5742924EB4F9B00703044 /* libarmadillo.9.90.2.dylib */,
 			);
@@ -267,6 +271,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					/usr/local/Cellar/armadillo/9.900.2/lib,
+					/usr/local/Cellar/gmp/6.2.0/lib,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -283,6 +288,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					/usr/local/Cellar/armadillo/9.900.2/lib,
+					/usr/local/Cellar/gmp/6.2.0/lib,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};

@@ -13,6 +13,7 @@
 #include <chrono>
 #include <iostream>
 #include <armadillo>
+#include <string>
 
 namespace fibonacci {
 
@@ -115,6 +116,19 @@ namespace fibonacci {
         out[3] = A[2]*A[1] + A[3]*A[3];
     }
 
+    std::string to_string(__uint128_t num) {
+        auto tenPow19 = 10000000000000000000;
+        std::string str;
+        do {
+            uint64_t digits = num % tenPow19;
+            auto digitsStr = std::to_string(digits);
+            auto leading0s = (digits != num) ? std::string(19 - digitsStr.length(), '0') : "";
+            str = leading0s + digitsStr + str;
+            num = (num - digits) / tenPow19;
+        } while (num != 0);
+        return str;
+    }
+
     __uint128_t fast_doubling( size_t n ) {
         
         __uint128_t fn = 0;
@@ -152,6 +166,65 @@ namespace fibonacci {
         // set the fn value and return it
         fn = x[0];
         return fn;
+    }
+
+    namespace biginput {
+        using mat22 = std::array<big_int, 4>;
+        using vec2  = std::array<big_int, 2>;
+        void mat_vec_inplace( const mat22& A, vec2& x){
+            // computing out = A * B
+            // assume row order matrices
+            big_int tmp0 = (A[0]*x[0]) + (A[1]*x[1]);
+            big_int tmp1 = (A[2]*x[0]) + (A[3]*x[1]);
+            x[0] = tmp0;
+            x[1] = tmp1;
+        }
+        void mat_square( const mat22& A, mat22& out){
+            // computing out = A * A
+            // assume row order matrices
+            out[0] = A[0]*A[0] + A[1]*A[2];
+            out[1] = A[0]*A[1] + A[1]*A[3];
+            out[2] = A[2]*A[0] + A[3]*A[2];
+            out[3] = A[2]*A[1] + A[3]*A[3];
+        }
+    
+        big_int fast_doubling( size_t n ) {
+            big_int fn = 0;
+            
+            // return trivial base cases
+            if( n == 0 ){ return 0; }
+            if( n == 1 ){ return 1; }
+            
+            // initialize the list of pre-computed matrices
+            --n;
+            std::vector<mat22> computed_mats(std::log2(n)+1);
+            size_t size = computed_mats.size();
+            
+            // initialize first matrix
+            mat22& A = computed_mats[0];
+            A[0] = 1; A[1] = 1;
+            A[2] = 1; A[3] = 0;
+            
+            // compute matrices using previous matrix
+            for(size_t i = 1; i < size; ++i){
+                mat_square(computed_mats[i-1], computed_mats[i]);
+            }// end for i
+            
+            // compute the final result
+            vec2 x;
+            x[0] = 1; x[1] = 0;
+            size_t pow = 1;
+            for(size_t i = 0; i < size; ++i){
+                if( (pow & n) ){
+                    mat_vec_inplace(computed_mats[i], x);
+                }
+                pow *= 2;
+            }// end for i
+            
+            // set the fn value and return it
+            fn = x[0];
+            return fn;
+        }
     }
 
     /* Simple test to run and compare approaches */
@@ -210,6 +283,30 @@ namespace fibonacci {
             std::cout << "The error in medium approach is " << percent_different << "%" << std::endl;
             std::cout << std::endl;
         }// end for loop
+    }
+
+    void test_exact_fibonacci_bignum() {
+        
+        // list of input n values to try to see how
+        // the two algorithms compare
+        size_t n = 2000000;
+        
+        size_t num_samples = 10;
+        {// test the exact big num version
+            big_int out;
+            std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
+            
+            for(size_t i = 0; i < num_samples; ++i){
+                out = fibonacci::biginput::fast_doubling(n);
+            }
+            
+            std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
+            std::chrono::duration<double> time_span = std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);
+            double mruntime = time_span.count()/static_cast<double>(num_samples);
+            std::cout << "In " << mruntime << " seconds on avg, found that" << std::endl;
+            std::cout << "F(" << n << ") = " << ".. yeah, too big" << std::endl; //out << std::endl;
+        }
+            
     }
 
 }
