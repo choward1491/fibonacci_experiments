@@ -224,27 +224,23 @@ namespace fibonacci {
             
             // initialize the list of pre-computed matrices
             --n;
-            std::vector<mat22> computed_mats(std::log2(n)+1);
-            size_t size = computed_mats.size();
+            size_t size = std::log2(n) + 1;
+            std::vector<mat22> computed_mats(2);
             
             // initialize first matrix
             mat22& A = computed_mats[0];
             A[0] = 1; A[1] = 1;
             A[2] = 1; A[3] = 0;
             
-            // compute matrices using previous matrix
-            for(size_t i = 1; i < size; ++i){
-                mat_square(computed_mats[i-1], computed_mats[i]);
-            }// end for i
-            
             // compute the final result
             vec2 x;
             x[0] = 1; x[1] = 0;
             size_t pow = 1;
-            for(size_t i = 0; i < size; ++i){
-                if( (pow & n) ){
-                    mat_vec_inplace(computed_mats[i], x);
-                }
+            if( (pow & n) ){ mat_vec_inplace(computed_mats[0], x); }
+            pow *= 2;
+            for(size_t i = 1; i < size; ++i){
+                mat_square(computed_mats[(i+1)%2], computed_mats[i%2]);
+                if( (pow & n) ){ mat_vec_inplace(computed_mats[i%2], x); }
                 pow *= 2;
             }// end for i
             
@@ -332,6 +328,30 @@ namespace fibonacci {
                 std::chrono::duration<double> time_span = std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);
                 double mruntime = time_span.count()/static_cast<double>(num_samples);
                 std::cout << "In " << mruntime << " seconds on avg, found F(" << n << ")" << std::endl;
+                //std::cout << mruntime << std::endl;
+                //std::cout << "F(" << n << ") = " << ".. yeah, too big" << std::endl; //out << std::endl;
+            }
+        }
+        
+        // list of input n values to try to see how
+        // the two algorithms compare
+        std::vector<size_t> n_values2 { 5000000, 10000000, 20000000, 40000000, 80000000, 160000000, 320000000, 640000000, 1000000000, 2000000000 };
+        
+        size_t num_samples2 = 1;
+        for(auto n: n_values2){
+            {// test the exact big num version
+                big_int out;
+                std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
+                
+                for(size_t i = 0; i < num_samples2; ++i){
+                    out = fibonacci::biginput::fast_doubling(n);
+                }
+                
+                std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
+                std::chrono::duration<double> time_span = std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);
+                double mruntime = time_span.count()/static_cast<double>(num_samples2);
+                std::cout << "In " << mruntime << " seconds on avg, found F(" << n << ")" << std::endl;
+                //std::cout << mruntime << std::endl;
                 //std::cout << "F(" << n << ") = " << ".. yeah, too big" << std::endl; //out << std::endl;
             }
         }
@@ -357,6 +377,30 @@ namespace fibonacci {
                 std::chrono::duration<double> time_span = std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);
                 double mruntime = time_span.count()/static_cast<double>(num_samples);
                 std::cout << "In " << mruntime << " seconds on avg, found F(" << n << ")" << std::endl;
+                //std::cout << mruntime << std::endl;
+                //std::cout << "F(" << n << ") = " << ".. yeah, too big" << std::endl; //out << std::endl;
+            }
+        }
+        
+        // list of input n values to try to see how
+        // the two algorithms compare
+        std::vector<size_t> n_values2 { 5000000, 10000000, 20000000, 40000000, 80000000, 160000000, 320000000, 640000000, 1000000000, 2000000000 };
+        
+        size_t num_samples2 = 1;
+        for(auto n: n_values2){
+            {// test the exact big num version
+                big_int out;
+                std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
+                
+                for(size_t i = 0; i < num_samples2; ++i){
+                    out = fibonacci::biginput::medium_approach(n);
+                }
+                
+                std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
+                std::chrono::duration<double> time_span = std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);
+                double mruntime = time_span.count()/static_cast<double>(num_samples2);
+                std::cout << "In " << mruntime << " seconds on avg, found F(" << n << ")" << std::endl;
+                //std::cout << mruntime << std::endl;
                 //std::cout << "F(" << n << ") = " << ".. yeah, too big" << std::endl; //out << std::endl;
             }
         }
